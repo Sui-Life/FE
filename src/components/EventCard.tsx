@@ -21,7 +21,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   const getStatusBadge = () => {
     if (isEnded) {
       return (
-        <span className="px-2 py-1 backdrop-blur-md border rounded text-[10px] font-bold uppercase tracking-widest bg-slate-800/80 border-slate-700 text-slate-400">
+        <span className="px-2 py-1 backdrop-blur-md border rounded text-[10px] font-bold uppercase tracking-widest bg-slate-100 border-slate-300 text-slate-500">
           ENDED
         </span>
       );
@@ -41,7 +41,7 @@ export const EventCard: React.FC<EventCardProps> = ({
       );
     }
     return (
-      <span className="px-2 py-1 backdrop-blur-md border rounded text-[10px] font-bold uppercase tracking-widest bg-[#39FF14]/10 border-[#39FF14]/20 text-[#39FF14]">
+      <span className="px-2 py-1 backdrop-blur-md border rounded text-[10px] font-bold uppercase tracking-widest bg-[#6FD6F7]/10 border-[#6FD6F7]/20 text-[#6FD6F7]">
         OPEN
       </span>
     );
@@ -52,7 +52,7 @@ export const EventCard: React.FC<EventCardProps> = ({
       return {
         text: "See Results",
         className:
-          "bg-slate-800 text-slate-400 hover:bg-slate-700 cursor-pointer",
+          "bg-slate-200 text-slate-500 hover:bg-slate-300 cursor-pointer",
         icon: <Icons.Trophy className="w-4 h-4" />,
       };
     }
@@ -60,7 +60,7 @@ export const EventCard: React.FC<EventCardProps> = ({
       return {
         text: "View Status",
         className:
-          "bg-slate-800 text-white border border-slate-600 hover:bg-slate-700",
+          "bg-slate-100 text-slate-700 border border-slate-300 hover:bg-slate-200",
         icon: <Icons.Check className="w-4 h-4" />,
       };
     }
@@ -72,8 +72,8 @@ export const EventCard: React.FC<EventCardProps> = ({
       };
     }
     return {
-      text: "Join Race",
-      className: "bg-[#39FF14] text-black hover:bg-[#32e612]",
+      text: "Join Quest",
+      className: "bg-[#6FD6F7] text-black hover:bg-[#5BBCE0]",
       icon: <Icons.Flag className="w-4 h-4" />,
     };
   };
@@ -81,14 +81,14 @@ export const EventCard: React.FC<EventCardProps> = ({
   const buttonConfig = getButtonContent();
 
   return (
-    <div className="group flex flex-col bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800 hover:border-[#39FF14]/30 transition-all duration-300">
+    <div className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-[#6FD6F7] transition-all duration-300 shadow-sm hover:shadow-lg">
       <div className="relative aspect-video overflow-hidden bg-slate-950">
         <img
           src={event.imageUrl}
           alt={event.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-80" />
 
         <div className="absolute top-3 left-3 flex gap-2">
           {getStatusBadge()}
@@ -96,7 +96,7 @@ export const EventCard: React.FC<EventCardProps> = ({
 
         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
           <div>
-            <h3 className="text-xl font-bold text-white tracking-tight">
+            <h3 className="text-xl font-bold text-slate-800 tracking-tight">
               {event.name}
             </h3>
             <p className="text-xs text-slate-400 font-mono mt-1">
@@ -107,12 +107,12 @@ export const EventCard: React.FC<EventCardProps> = ({
       </div>
 
       <div className="p-5 flex flex-col flex-1 space-y-4">
-        <div className="flex justify-between items-center bg-slate-800/50 p-3 rounded-lg border border-slate-800">
+        <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200">
           <span className="text-xs font-bold text-slate-500 uppercase">
             Reward
           </span>
           <div className="flex items-center gap-1">
-            <span className="text-lg font-bold text-[#39FF14]">
+            <span className="text-lg font-bold text-[#6FD6F7]">
               {event.rewardAmount}
             </span>
             <span className="text-lg font-bold text-[#4DA2FF]">SUI</span>

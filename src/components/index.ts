@@ -4,7 +4,7 @@ export { Navigation } from './Navigation';
 export { TransferModal } from './TransferModal';
 export { EventList } from './EventList';
 export { EventDetail } from './EventDetail';
-export { BuyRunModal } from './BuyRunModal';
+export { BuyRunModal } from './BuyLifeModal';
 export { default as WalletConnect } from './WalletConnect';
 export { Button } from './Button';
 export { LoadingSpinner } from './LoadingSpinner';

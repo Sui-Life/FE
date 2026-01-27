@@ -26,7 +26,7 @@ import { CONTRACT_CONFIG } from "@/config/contract";
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"events" | "create" | "dashboard">(
-    "events"
+    "events",
   );
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [isBuyRunModalOpen, setIsBuyRunModalOpen] = useState(false);
@@ -65,7 +65,7 @@ const App: React.FC = () => {
     {
       enabled: !!currentAccount,
       refetchInterval: 5000,
-    }
+    },
   );
 
   const suiBalance = balanceData
@@ -82,7 +82,7 @@ const App: React.FC = () => {
     {
       enabled: !!currentAccount,
       refetchInterval: 5000,
-    }
+    },
   );
 
   const runBalance = runBalanceData
@@ -102,7 +102,9 @@ const App: React.FC = () => {
   const createEventMutation = useCreateEvent({
     onSuccess: async () => {
       setActiveTab("events");
-      showSuccess("Event created successfully! Participants can now join.");
+      showSuccess(
+        "Quest created successfully! Participants can now join and take action.",
+      );
       await handleRefresh();
     },
     showToast: (message, type) => {
@@ -116,7 +118,7 @@ const App: React.FC = () => {
 
   const claimRewardMutation = useClaimReward({
     onSuccess: async () => {
-      showSuccess("Reward claimed successfully! Winner selected.");
+      showSuccess("Reward claimed successfully! Quest completed.");
       await handleRefresh();
     },
     showToast: (message, type) => {
@@ -135,7 +137,7 @@ const App: React.FC = () => {
 
   const handleJoinEvent = (id: string) => {
     if (!currentAccount) {
-      showError("Please connect wallet to join race");
+      showError("Please connect wallet to join quest");
       return;
     }
     setSelectedEventId(id);
@@ -153,7 +155,7 @@ const App: React.FC = () => {
 
   const joinEventMutation = useJoinEvent({
     onSuccess: async () => {
-      showSuccess("Joined Event!");
+      showSuccess("You've joined the quest! Now complete the mission.");
       await handleRefresh();
     },
     showToast: (m, t) => (t === "success" ? showSuccess(m) : showError(m)),
@@ -161,7 +163,7 @@ const App: React.FC = () => {
 
   const submitProofMutation = useSubmitProof({
     onSuccess: async () => {
-      showSuccess("Proof Submitted!");
+      showSuccess("Proof submitted! Waiting for verification.");
       await handleRefresh();
     },
     showToast: (m, t) => (t === "success" ? showSuccess(m) : showError(m)),
@@ -179,7 +181,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <nav className="fixed top-0 left-0 right-0 h-16 glass border-b shadow-lg shadow-[#39FF14]/5 z-50 px-6 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm z-50 px-6 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div
             className="flex items-center gap-2 cursor-pointer"
@@ -188,11 +190,9 @@ const App: React.FC = () => {
               setSelectedEventId(null);
             }}
           >
-            <div className="w-8 h-8 bg-[#39FF14] rounded flex items-center justify-center text-black shadow-[0_0_10px_rgba(57,255,20,0.5)]">
-              <Icons.Zap />
-            </div>
-            <span className="text-lg font-extrabold tracking-tight text-white uppercase italic">
-              Run<span className="text-[#39FF14]">2</span>Earn
+            <img src="/logo.png" alt="SuiLife Logo" className="w-14 h-14" />
+            <span className="text-lg font-extrabold tracking-tight text-slate-800 uppercase italic">
+              <span className="text-[#6FD6F7]">Sui </span>Life
             </span>
           </div>
 
@@ -213,18 +213,18 @@ const App: React.FC = () => {
             </span>
             {currentAccount && (
               <div className="flex flex-col items-end gap-1">
-                <span className="text-[11px] font-mono text-white">
+                <span className="text-[11px] font-mono text-slate-700">
                   {currentAccount.address.slice(0, 6)}...
                   {currentAccount.address.slice(-4)}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-[#39FF14]">
+                  <span className="text-[11px] font-bold text-[#6FD6F7]">
                     {suiBalance.toFixed(3)} SUI
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-[#FFA500]">
-                    {runBalance.toFixed(2)} RUN
+                    {runBalance.toFixed(2)} LIFE
                   </span>
                 </div>
               </div>
