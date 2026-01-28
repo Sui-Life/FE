@@ -1,5 +1,5 @@
 import React from "react";
-import { Event } from "@/types";
+import { Event, EventStatus } from "@/types";
 import { Icons } from "@/constants";
 import { Button } from "./Button";
 
@@ -8,10 +8,37 @@ interface DashboardProps {
   myEvents: Event[];
   joinedEvents: Event[];
   submittedEventIds: string[];
-  submissionObjects: Record<string, string>; // Add submissionObjects
+  submissionObjects: Record<string, string>;
   onClaim: (eventId: string, vaultId: string, submissionId?: string) => void;
   onViewEvent: (event: Event) => void;
+  onVerify?: (event: Event) => void;
 }
+
+// Status badge styling
+const getStatusBadge = (status: EventStatus) => {
+  const styles: Record<
+    EventStatus,
+    { bg: string; text: string; label: string }
+  > = {
+    PENDING: {
+      bg: "bg-yellow-400/10",
+      text: "text-yellow-500",
+      label: "Pending",
+    },
+    RUNNING: {
+      bg: "bg-green-400/10",
+      text: "text-green-500",
+      label: "Running",
+    },
+    ENDED: { bg: "bg-orange-400/10", text: "text-orange-500", label: "Ended" },
+    VERIFIED: {
+      bg: "bg-blue-400/10",
+      text: "text-blue-500",
+      label: "Completed",
+    },
+  };
+  return styles[status] || styles.PENDING;
+};
 
 export const Dashboard: React.FC<DashboardProps> = ({
   currentAccount,
@@ -20,6 +47,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   submittedEventIds,
   onClaim,
   onViewEvent,
+  onVerify,
 }) => {
   const [activeTab, setActiveTab] = React.useState<"joined" | "created">(
     "joined",
@@ -69,9 +97,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-slate-500 text-xs uppercase font-bold mb-2">
-            Total Earnings
+            Awaiting Verification
           </p>
-          <p className="text-3xl font-black text-yellow-400">--</p>
+          <p className="text-3xl font-black text-orange-400">
+            {myEvents.filter((e) => e.status === "ENDED").length}
+          </p>
         </div>
       </div>
 
@@ -112,7 +142,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             ) : (
               <table className="w-full text-left">
-                <thead className="bg-slate-900/50 text-slate-400 text-xs uppercase">
+                <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
                   <tr>
                     <th className="p-4">Quest Name</th>
                     <th className="p-4">Reward</th>
@@ -120,13 +150,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <th className="p-4">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-slate-100">
                   {joinedEvents.map((event) => {
                     const isSubmitted = submittedEventIds.includes(event.id);
+                    const statusBadge = getStatusBadge(event.status);
+                    const isApproved =
+                      event.approvedParticipants?.includes(currentAccount);
+                    const hasClaimed =
+                      event.claimedParticipants?.includes(currentAccount);
+
                     return (
                       <tr
                         key={event.id}
-                        className="hover:bg-slate-800/30 transition-colors"
+                        className="hover:bg-slate-50 transition-colors"
                       >
                         <td className="p-4 font-bold text-slate-800">
                           {event.name}
@@ -135,27 +171,39 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           {event.rewardAmount} {event.rewardAsset}
                         </td>
                         <td className="p-4">
-                          {event.status === "CLAIMED" ? (
-                            <span className="text-red-400 text-xs bg-red-400/10 px-2 py-1 rounded">
-                              Ended
+                          <span
+                            className={`text-xs font-bold px-2 py-1 rounded ${statusBadge.bg} ${statusBadge.text}`}
+                          >
+                            {statusBadge.label}
+                          </span>
+                          {isApproved && !hasClaimed && (
+                            <span className="ml-2 text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-600">
+                              Approved ✓
                             </span>
-                          ) : isSubmitted ? (
-                            <span className="text-blue-400 text-xs bg-blue-400/10 px-2 py-1 rounded">
-                              Submitted
-                            </span>
-                          ) : (
-                            <span className="text-yellow-400 text-xs bg-yellow-400/10 px-2 py-1 rounded">
-                              In Progress
+                          )}
+                          {hasClaimed && (
+                            <span className="ml-2 text-xs font-bold px-2 py-1 rounded bg-blue-100 text-blue-600">
+                              Claimed ✓
                             </span>
                           )}
                         </td>
-                        <td className="p-4">
+                        <td className="p-4 flex gap-2">
                           <Button
                             onClick={() => onViewEvent(event)}
                             className="text-xs py-1 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700"
                           >
-                            View Details
+                            View
                           </Button>
+                          {(event.status === "VERIFIED" || isApproved) &&
+                            isApproved &&
+                            !hasClaimed && (
+                              <Button
+                                onClick={() => onClaim(event.id, event.vaultId)}
+                                className="text-xs py-1 px-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold"
+                              >
+                                Claim
+                              </Button>
+                            )}
                         </td>
                       </tr>
                     );
@@ -177,60 +225,71 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
             ) : (
               <table className="w-full text-left">
-                <thead className="bg-slate-900/50 text-slate-400 text-xs uppercase">
+                <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
                   <tr>
                     <th className="p-4">Quest Name</th>
                     <th className="p-4">Participants</th>
-                    <th className="p-4">Vault Status</th>
-                    <th className="p-4">Creator Actions</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
-                  {myEvents.map((event) => (
-                    <tr
-                      key={event.id}
-                      className="hover:bg-slate-50 transition-colors"
-                    >
-                      <td className="p-4">
-                        <div className="font-bold text-slate-800">
-                          {event.name}
-                        </div>
-                        <div className="text-xs text-slate-500 truncate max-w-[200px]">
-                          {event.description}
-                        </div>
-                      </td>
-                      <td className="p-4 text-slate-600">
-                        {event.participantsCount || 0}
-                      </td>
-                      <td className="p-4">
-                        {event.status === "CLAIMED" ? (
-                          <span className="text-slate-500 text-xs bg-slate-800 px-2 py-1 rounded">
-                            Disbursed
-                          </span>
-                        ) : (
-                          <span className="text-green-400 text-xs bg-green-400/10 px-2 py-1 rounded">
-                            Locked
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-4 flex gap-2">
-                        <Button
-                          onClick={() => onViewEvent(event)}
-                          className="text-xs py-1 px-3 bg-slate-800 hover:bg-slate-700 text-white"
-                        >
-                          View
-                        </Button>
-                        {event.status === "OPEN" && (
-                          <Button
-                            onClick={() => onClaim(event.id, event.vaultId)}
-                            className="text-xs py-1 px-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold"
+                <tbody className="divide-y divide-slate-100">
+                  {myEvents.map((event) => {
+                    const statusBadge = getStatusBadge(event.status);
+
+                    return (
+                      <tr
+                        key={event.id}
+                        className="hover:bg-slate-50 transition-colors"
+                      >
+                        <td className="p-4">
+                          <div className="font-bold text-slate-800">
+                            {event.name}
+                          </div>
+                          <div className="text-xs text-slate-500 truncate max-w-[200px]">
+                            {event.description}
+                          </div>
+                        </td>
+                        <td className="p-4 text-slate-600">
+                          <div className="font-bold">
+                            {event.currentParticipants} /{" "}
+                            {event.maxParticipants}
+                          </div>
+                          {event.status === "VERIFIED" && (
+                            <div className="text-xs text-green-500">
+                              {event.approvedParticipants?.length || 0} approved
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-4">
+                          <span
+                            className={`text-xs font-bold px-2 py-1 rounded ${statusBadge.bg} ${statusBadge.text}`}
                           >
-                            Claim & End
+                            {statusBadge.label}
+                          </span>
+                        </td>
+                        <td className="p-4 flex gap-2">
+                          <Button
+                            onClick={() => onViewEvent(event)}
+                            className="text-xs py-1 px-3 bg-slate-800 hover:bg-slate-700 text-white"
+                          >
+                            View
                           </Button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                          {(event.status === "ENDED" ||
+                            Date.now() > event.endTime) &&
+                            event.status !== "VERIFIED" &&
+                            onVerify && (
+                              <Button
+                                onClick={() => onVerify(event)}
+                                className="text-xs py-1 px-3 bg-green-600 hover:bg-green-500 text-white font-bold"
+                              >
+                                Verify
+                              </Button>
+                            )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}

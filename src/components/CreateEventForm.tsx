@@ -10,6 +10,9 @@ interface CreateEventFormData {
   rewardAmount: number;
   rewardAsset: "SUI";
   imageUrl: string;
+  startTime: string; // ISO datetime-local string
+  endTime: string;
+  maxParticipants: number;
 }
 
 interface FormErrors {
@@ -18,26 +21,45 @@ interface FormErrors {
   instructions?: string;
   rewardAmount?: string;
   imageUrl?: string;
+  startTime?: string;
+  endTime?: string;
+  maxParticipants?: string;
 }
 
 interface CreateEventFormProps {
   onCreate: (data: CreateEventFormData) => Promise<void>;
   isLoading?: boolean;
-  runBalance: number;
+  lifeBalance: number;
 }
+
+// Helper to get default datetime (1 hour from now)
+const getDefaultStartTime = () => {
+  const date = new Date();
+  date.setHours(date.getHours() + 1);
+  return date.toISOString().slice(0, 16);
+};
+
+const getDefaultEndTime = () => {
+  const date = new Date();
+  date.setDate(date.getDate() + 7); // 7 days from now
+  return date.toISOString().slice(0, 16);
+};
 
 export const CreateEventForm: React.FC<CreateEventFormProps> = ({
   onCreate,
   isLoading = false,
-  runBalance,
+  lifeBalance,
 }) => {
   const [formData, setFormData] = useState<CreateEventFormData>({
     name: "",
     description: "",
     instructions: "",
-    rewardAmount: 1, // Default 1 SUI
+    rewardAmount: 1,
     rewardAsset: "SUI",
     imageUrl: "",
+    startTime: getDefaultStartTime(),
+    endTime: getDefaultEndTime(),
+    maxParticipants: 100,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -53,6 +75,20 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
       newErrors.instructions = "Instructions are required";
     if (formData.rewardAmount <= 0)
       newErrors.rewardAmount = "Reward must be greater than 0";
+    if (formData.maxParticipants <= 0)
+      newErrors.maxParticipants = "Max participants must be greater than 0";
+
+    // Validate times
+    const startDate = new Date(formData.startTime);
+    const endDate = new Date(formData.endTime);
+    const now = new Date();
+
+    if (startDate < now) {
+      newErrors.startTime = "Start time must be in the future";
+    }
+    if (endDate <= startDate) {
+      newErrors.endTime = "End time must be after start time";
+    }
 
     if (!formData.imageUrl.trim()) {
       newErrors.imageUrl = "Quest image URL is required";
@@ -95,6 +131,9 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
         rewardAmount: 1,
         rewardAsset: "SUI",
         imageUrl: "",
+        startTime: getDefaultStartTime(),
+        endTime: getDefaultEndTime(),
+        maxParticipants: 100,
       });
       setImagePreview("");
     } catch (error) {
@@ -107,7 +146,7 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
     value: string | number,
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
+    if (errors[field as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
@@ -178,27 +217,85 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
             )}
           </div>
 
-          {/* Reward Amount - SUI Only */}
-          <div>
-            <label className="block text-sm font-medium text-slate-600 mb-2">
-              Reward Amount (SUI)
-            </label>
-            <input
-              type="number"
-              min="0.1"
-              step="0.1"
-              value={formData.rewardAmount}
-              onChange={(e) =>
-                handleInputChange(
-                  "rewardAmount",
-                  parseFloat(e.target.value) || 0,
-                )
-              }
-              className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6FD6F7] focus:border-transparent"
-            />
-            {errors.rewardAmount && (
-              <p className="mt-1 text-sm text-red-400">{errors.rewardAmount}</p>
-            )}
+          {/* Time Settings */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">
+                Start Time
+              </label>
+              <input
+                type="datetime-local"
+                value={formData.startTime}
+                onChange={(e) => handleInputChange("startTime", e.target.value)}
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6FD6F7] focus:border-transparent"
+              />
+              {errors.startTime && (
+                <p className="mt-1 text-sm text-red-400">{errors.startTime}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">
+                End Time
+              </label>
+              <input
+                type="datetime-local"
+                value={formData.endTime}
+                onChange={(e) => handleInputChange("endTime", e.target.value)}
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6FD6F7] focus:border-transparent"
+              />
+              {errors.endTime && (
+                <p className="mt-1 text-sm text-red-400">{errors.endTime}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Max Participants & Reward */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">
+                Max Participants
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={formData.maxParticipants}
+                onChange={(e) =>
+                  handleInputChange(
+                    "maxParticipants",
+                    parseInt(e.target.value) || 1,
+                  )
+                }
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6FD6F7] focus:border-transparent"
+              />
+              {errors.maxParticipants && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.maxParticipants}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">
+                Reward Amount (SUI)
+              </label>
+              <input
+                type="number"
+                min="0.1"
+                step="0.1"
+                value={formData.rewardAmount}
+                onChange={(e) =>
+                  handleInputChange(
+                    "rewardAmount",
+                    parseFloat(e.target.value) || 0,
+                  )
+                }
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6FD6F7] focus:border-transparent"
+              />
+              {errors.rewardAmount && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.rewardAmount}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Image URL */}
@@ -259,12 +356,12 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
               <div className="flex justify-between items-center text-sm">
                 <span className="text-slate-600">Your Balance:</span>
                 <span
-                  className={`font-mono ${runBalance < 10 ? "text-red-400" : "text-white"}`}
+                  className={`font-mono ${lifeBalance < 10 ? "text-red-400" : "text-white"}`}
                 >
-                  {runBalance.toFixed(2)} LIFE
+                  {lifeBalance.toFixed(2)} LIFE
                 </span>
               </div>
-              {runBalance < 10 && (
+              {lifeBalance < 10 && (
                 <p className="text-xs text-red-400 mt-2 bg-red-400/10 p-2 rounded">
                   ⚠️ Insufficient LIFE tokens. You need at least 10 LIFE to
                   create a quest.
@@ -274,7 +371,7 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
 
             <Button
               type="submit"
-              disabled={isLoading || runBalance < 10}
+              disabled={isLoading || lifeBalance < 10}
               className="w-full bg-[#6FD6F7] hover:bg-[#5BBCE0] text-black font-extrabold uppercase py-4 rounded-xl shadow-[0_0_20px_rgba(111,214,247,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
@@ -287,7 +384,7 @@ export const CreateEventForm: React.FC<CreateEventFormProps> = ({
               )}
             </Button>
             <p className="text-center text-xs text-slate-500 mt-3">
-              * 10 LIFE fee will be burned. Reward SUI will be locked.
+              * 10 LIFE fee will be burned. Reward SUI will be locked in vault.
             </p>
           </div>
         </form>

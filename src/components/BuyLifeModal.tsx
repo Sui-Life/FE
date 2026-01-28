@@ -3,14 +3,14 @@ import { Button } from "./Button";
 import { Icons } from "@/constants";
 import { LoadingSpinner } from "./LoadingSpinner";
 
-interface BuyRunModalProps {
+interface BuyLifeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onBuy: (amount: number) => Promise<void>;
   suiBalance: number;
 }
 
-export const BuyRunModal: React.FC<BuyRunModalProps> = ({
+export const BuyLifeModal: React.FC<BuyLifeModalProps> = ({
   isOpen,
   onClose,
   onBuy,
@@ -28,7 +28,7 @@ export const BuyRunModal: React.FC<BuyRunModalProps> = ({
     onClose();
   };
 
-  const runRate = 1000; // 1 SUI = 1000 RUN
+  const lifeRate = 1000; // 1 SUI = 1000 LIFE
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm fade-in">
@@ -85,7 +85,7 @@ export const BuyRunModal: React.FC<BuyRunModalProps> = ({
             <div className="flex items-center gap-2">
               <input
                 type="number"
-                value={amount * runRate}
+                value={amount * lifeRate}
                 disabled
                 className="bg-transparent text-2xl font-bold text-[#6FD6F7] outline-none w-full"
               />

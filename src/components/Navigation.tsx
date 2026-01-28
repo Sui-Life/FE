@@ -4,13 +4,13 @@ import { Icons } from "@/constants";
 interface NavigationProps {
   activeTab: "events" | "create" | "dashboard";
   onTabChange: (tab: "events" | "create" | "dashboard") => void;
-  onBuyRun?: () => void;
+  onBuyLife?: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
   activeTab,
   onTabChange,
-  onBuyRun,
+  onBuyLife,
 }) => {
   const tabs = [
     { id: "events", label: "Explore Quests", icon: <Icons.Flag /> },
@@ -35,11 +35,11 @@ export const Navigation: React.FC<NavigationProps> = ({
           {tab.label}
         </button>
       ))}
-      {onBuyRun && (
+      {onBuyLife && (
         <>
           <div className="w-px h-3 bg-slate-300 mx-1"></div>
           <button
-            onClick={onBuyRun}
+            onClick={onBuyLife}
             className="px-4 h-full rounded flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#6FD6F7] hover:bg-[#6FD6F7]/10 transition-colors"
           >
             Buy LIFE

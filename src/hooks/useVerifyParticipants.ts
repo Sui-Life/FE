@@ -6,40 +6,46 @@ import {
 import { Transaction } from "@mysten/sui/transactions";
 import { CONTRACT_CONFIG } from "@/config/contract";
 
-interface JoinEventData {
+interface VerifyParticipantsData {
   eventId: string;
+  approvedAddresses: string[];
 }
 
-interface UseJoinEventOptions {
+interface UseVerifyParticipantsOptions {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
   showToast?: (message: string, type: "success" | "error") => void;
 }
 
-export const useJoinEvent = (options?: UseJoinEventOptions) => {
+export const useVerifyParticipants = (
+  options?: UseVerifyParticipantsOptions,
+) => {
   const queryClient = useQueryClient();
   const currentAccount = useCurrentAccount();
   const { mutateAsync: signAndExecuteTransaction } =
     useSignAndExecuteTransaction();
 
   return useMutation({
-    mutationFn: async (data: JoinEventData) => {
+    mutationFn: async (data: VerifyParticipantsData) => {
       if (!currentAccount) {
         throw new Error("Please connect your wallet first");
       }
 
+      if (data.approvedAddresses.length === 0) {
+        throw new Error("Please select at least one participant to approve");
+      }
+
       const tx = new Transaction();
 
-      // Call join_event(event, ctx)
+      // Call verify_participants(event, approved_addresses, clock, ctx)
       tx.moveCall({
-        target: `${CONTRACT_CONFIG.EVENT_PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${CONTRACT_CONFIG.FUNCTIONS.JOIN_EVENT}`,
+        target: `${CONTRACT_CONFIG.EVENT_PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${CONTRACT_CONFIG.FUNCTIONS.VERIFY_PARTICIPANTS}`,
         arguments: [
           tx.object(data.eventId),
-          tx.object("0x6"), // Clock object
+          tx.pure.vector("address", data.approvedAddresses),
+          tx.object("0x6"), // Sui Clock object
         ],
       });
-
-      // Object transfer is handled in Move function
 
       const result = await signAndExecuteTransaction({
         transaction: tx,
@@ -48,14 +54,20 @@ export const useJoinEvent = (options?: UseJoinEventOptions) => {
       return result;
     },
     onSuccess: async () => {
-      options?.showToast?.("Successfully joined event!", "success");
+      options?.showToast?.(
+        "Participants verified successfully! They can now claim rewards.",
+        "success",
+      );
       queryClient.invalidateQueries({ queryKey: ["getOwnedObjects"] });
+      queryClient.invalidateQueries({ queryKey: ["allEvents"] });
       options?.onSuccess?.();
     },
     onError: (error) => {
-      console.error("Error joining event:", error);
+      console.error("Error verifying participants:", error);
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to join event.";
+        error instanceof Error
+          ? error.message
+          : "Failed to verify participants.";
       options?.showToast?.(errorMessage, "error");
       options?.onError?.(
         error instanceof Error ? error : new Error(errorMessage),

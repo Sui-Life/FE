@@ -1,27 +1,33 @@
 // Contract configuration
 export const CONTRACT_CONFIG = {
   // Update this with your actual deployed package ID from testnet
-  EVENT_PACKAGE_ID: '0x9612a7bdf6c83ee36af0ada14343da997ce17b40c101bf0f452117d6c99ae06a', // Deployed package ID
-  TOKEN_PACKAGE_ID: '0xf554be094beb4e0023dcde223ca00a540a5a21ec3ae25ac551e037377e4fad5f', // 🔥 REPLACE with Token Package ID
-  MODULE_NAME: 'event',
-  TOKEN_MODULE_NAME: 'run_token',
+  EVENT_PACKAGE_ID:
+    "0x3743b6e4b471ec0c878c3e9a243e3c97392ed0824402dd27f6084fd2ae558bc1", // Deployed package ID
+  TOKEN_PACKAGE_ID:
+    "0x2d1bd20b3021e396cdac5a92e7ab060bcc602dd828f10ec85ba9d6abf59b0e32", // 🔥 REPLACE with Token Package ID
+  MODULE_NAME: "event",
+  TOKEN_MODULE_NAME: "life_token",
 
   // Shared Objects for Token (🔥 REPLACE with IDs from deployment output)
-  TOKEN_VAULT_ID: '0xdf68b4736632a169feb091f69b08557132c28e1deb5c42209a1de250a4cc0ebc',
-  TOKEN_PRICE_ID: '0x7199016702d3f1be32336a16cee6db5795a8cbbce963bd2551f052e2ea4ede0d',
-  TOKEN_STATE_ID: '0x9511e5dc5a1e150b93d9c636e4f3ac1f5bc5c230a8e6010438b8d7c66385ebe6',
+  TOKEN_VAULT_ID:
+    "0x30d735d8842c57c8a420cb79b89eec761ef6acca9129a33cacc7ba3be48cdafa",
+  TOKEN_PRICE_ID:
+    "0xfb5be84fd5fd97a929487f1d5b39bfaf5a231964cf6c50b3d634aadf187b3eb1",
+  TOKEN_STATE_ID:
+    "0xd6de053b64a02ce43b07bd492c10dc8629d633f2fdc5ddf886b0986b26be9044",
 
   // Network configuration
-  NETWORK: 'testnet',
+  NETWORK: "testnet",
 
   // Contract functions
   FUNCTIONS: {
-    CREATE_EVENT: 'create_event',
-    CLAIM_REWARD: 'claim_reward',
-    BUY_RUN: 'buy_run',
-    JOIN_EVENT: 'join_event',
-    SUBMIT_PROOF: 'submit_proof',
-  }
+    CREATE_EVENT: "create_event",
+    CLAIM_REWARD: "claim_reward",
+    BUY_RUN: "buy_life",
+    JOIN_EVENT: "join_event",
+    SUBMIT_PROOF: "submit_proof",
+    VERIFY_PARTICIPANTS: "verify_participants",
+  },
 };
 
 // Helper to get full function target

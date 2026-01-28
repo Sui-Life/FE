@@ -7,19 +7,19 @@ import {
   WalletConnect,
   ToastContainer,
   EventDetail,
-  BuyRunModal,
+  BuyLifeModal,
   Dashboard,
 } from "@/components";
 import {
-  useEvents,
   useAllEvents,
   useCreateEvent,
   useToast,
   useClaimReward,
-  useBuyRun,
+  useBuyLife,
   useJoinEvent,
   useSubmitProof,
   useUserParticipation,
+  useVerifyParticipants,
 } from "@/hooks";
 import { Icons } from "@/constants";
 import { CONTRACT_CONFIG } from "@/config/contract";
@@ -29,7 +29,7 @@ const App: React.FC = () => {
     "events",
   );
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const [isBuyRunModalOpen, setIsBuyRunModalOpen] = useState(false);
+  const [isBuyLifeModalOpen, setIsBuyLifeModalOpen] = useState(false);
 
   const currentAccount = useCurrentAccount();
   const { toasts, showSuccess, showError, removeToast } = useToast();
@@ -41,12 +41,10 @@ const App: React.FC = () => {
     refreshEvents: refreshAllEvents,
   } = useAllEvents();
 
-  // useEvents: Fetch only MY events (for Dashboard)
-  const {
-    events: myEvents,
-    isLoading: isMyEventsLoading,
-    refreshEvents: refreshMyEvents,
-  } = useEvents(currentAccount?.address || null);
+  // Filter allEvents to get only events created by current user (for Dashboard)
+  const myEvents = allEvents.filter(
+    (event) => event.creator === currentAccount?.address,
+  );
 
   const {
     joinedEventIds,
@@ -72,12 +70,12 @@ const App: React.FC = () => {
     ? Number(balanceData.totalBalance) / 1_000_000_000
     : 0;
 
-  // Fetch RUN Balance
-  const { data: runBalanceData } = useSuiClientQuery(
+  // Fetch LIFE Balance
+  const { data: lifeBalanceData } = useSuiClientQuery(
     "getBalance",
     {
       owner: currentAccount?.address || "",
-      coinType: `${CONTRACT_CONFIG.TOKEN_PACKAGE_ID}::${CONTRACT_CONFIG.TOKEN_MODULE_NAME}::RUN_TOKEN`,
+      coinType: `${CONTRACT_CONFIG.TOKEN_PACKAGE_ID}::${CONTRACT_CONFIG.TOKEN_MODULE_NAME}::LIFE_TOKEN`,
     },
     {
       enabled: !!currentAccount,
@@ -85,18 +83,14 @@ const App: React.FC = () => {
     },
   );
 
-  const runBalance = runBalanceData
-    ? Number(runBalanceData.totalBalance) / 1_000_000_000
+  const lifeBalance = lifeBalanceData
+    ? Number(lifeBalanceData.totalBalance) / 1_000_000_000
     : 0;
 
   const handleRefresh = async () => {
     // Wait for node indexing
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    await Promise.all([
-      refreshAllEvents(),
-      refreshMyEvents(),
-      refreshParticipation(),
-    ]);
+    await Promise.all([refreshAllEvents(), refreshParticipation()]);
   };
 
   const createEventMutation = useCreateEvent({
@@ -127,6 +121,17 @@ const App: React.FC = () => {
     },
   });
 
+  const verifyParticipantsMutation = useVerifyParticipants({
+    onSuccess: async () => {
+      showSuccess("Participants verified! They can now claim their rewards.");
+      await handleRefresh();
+    },
+    showToast: (message, type) => {
+      if (type === "success") showSuccess(message);
+      else showError(message);
+    },
+  });
+
   const handleCreateEvent = async (data: any) => {
     if (!currentAccount) {
       showError("Please connect your wallet first");
@@ -143,7 +148,7 @@ const App: React.FC = () => {
     setSelectedEventId(id);
   };
 
-  const { mutateAsync: buyRun } = useBuyRun({
+  const { mutateAsync: buyLife } = useBuyLife({
     onSuccess: () => {
       // Success toast is handled in hook
     },
@@ -169,12 +174,26 @@ const App: React.FC = () => {
     showToast: (m, t) => (t === "success" ? showSuccess(m) : showError(m)),
   });
 
-  const handleBuyRun = async (amount: number) => {
+  const handleBuyLife = async (amount: number) => {
     if (!currentAccount) {
       showError("Please connect your wallet first");
       return;
     }
-    await buyRun({ amountSui: amount });
+    await buyLife({ amountSui: amount });
+  };
+
+  const handleVerifyParticipants = async (
+    eventId: string,
+    approvedAddresses: string[],
+  ) => {
+    if (!currentAccount) {
+      showError("Please connect your wallet first");
+      return;
+    }
+    await verifyParticipantsMutation.mutateAsync({
+      eventId,
+      approvedAddresses,
+    });
   };
 
   const selectedEvent = allEvents.find((e) => e.id === selectedEventId);
@@ -202,7 +221,7 @@ const App: React.FC = () => {
               setActiveTab(tab);
               setSelectedEventId(null);
             }}
-            onBuyRun={() => setIsBuyRunModalOpen(true)}
+            onBuyLife={() => setIsBuyLifeModalOpen(true)}
           />
         </div>
 
@@ -218,13 +237,13 @@ const App: React.FC = () => {
                   {currentAccount.address.slice(-4)}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-[#6FD6F7]">
+                  <span className="text-[11px] font-bold text-[#1F7F9E]">
                     {suiBalance.toFixed(3)} SUI
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-[#FFA500]">
-                    {runBalance.toFixed(2)} LIFE
+                  <span className="text-[11px] font-bold text-[#6FD6F7]">
+                    {lifeBalance.toFixed(2)} LIFE
                   </span>
                 </div>
               </div>
@@ -260,6 +279,7 @@ const App: React.FC = () => {
                 showError("Submission ID not found. Cannot claim.");
               }
             }}
+            onVerify={handleVerifyParticipants}
             userAddress={currentAccount?.address}
             isJoined={joinedEventIds.includes(selectedEvent.id)}
             isSubmitted={submittedEventIds.includes(selectedEvent.id)}
@@ -282,7 +302,7 @@ const App: React.FC = () => {
                 <CreateEventForm
                   onCreate={handleCreateEvent}
                   isLoading={createEventMutation.isPending}
-                  runBalance={runBalance}
+                  lifeBalance={lifeBalance}
                 />
               </div>
             )}
@@ -310,16 +330,19 @@ const App: React.FC = () => {
                 onViewEvent={(event) => {
                   setSelectedEventId(event.id);
                 }}
+                onVerify={(event) => {
+                  setSelectedEventId(event.id);
+                }}
               />
             )}
           </>
         )}
       </main>
 
-      <BuyRunModal
-        isOpen={isBuyRunModalOpen}
-        onClose={() => setIsBuyRunModalOpen(false)}
-        onBuy={handleBuyRun}
+      <BuyLifeModal
+        isOpen={isBuyLifeModalOpen}
+        onClose={() => setIsBuyLifeModalOpen(false)}
+        onBuy={handleBuyLife}
         suiBalance={suiBalance}
       />
 
