@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![SuiLife Logo](./public/logo.png)
+<img src="./public/logo.png" alt="SuiLife Logo" width="120" />
 
 **Complete real-life missions, earn LIFE tokens, and get rewarded on the Sui blockchain.**
 
@@ -32,15 +32,15 @@
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Frontend** | React 19, TypeScript |
-| **Build Tool** | Vite 6.2 |
-| **Blockchain** | Sui Network (Testnet) |
-| **Sui Integration** | @mysten/dapp-kit, @mysten/sui |
-| **State Management** | TanStack React Query |
-| **Styling** | TailwindCSS |
-| **Fonts** | Plus Jakarta Sans, JetBrains Mono |
+| Category             | Technology                        |
+| -------------------- | --------------------------------- |
+| **Frontend**         | React 19, TypeScript              |
+| **Build Tool**       | Vite 6.2                          |
+| **Blockchain**       | Sui Network (Testnet)             |
+| **Sui Integration**  | @mysten/dapp-kit, @mysten/sui     |
+| **State Management** | TanStack React Query              |
+| **Styling**          | TailwindCSS                       |
+| **Fonts**            | Plus Jakarta Sans, JetBrains Mono |
 
 ---
 
@@ -93,23 +93,27 @@ FE/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd sui-life/FE
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Configure environment** (optional)
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 4. **Start development server**
+
    ```bash
    pnpm dev
    ```
@@ -123,10 +127,10 @@ FE/
 
 ## 📜 Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
+| Command        | Description              |
+| -------------- | ------------------------ |
+| `pnpm dev`     | Start development server |
+| `pnpm build`   | Build for production     |
 | `pnpm preview` | Preview production build |
 
 ---
@@ -139,12 +143,12 @@ Update the contract addresses in `src/config/contract.ts`:
 
 ```typescript
 export const CONTRACT_CONFIG = {
-  EVENT_PACKAGE_ID: "0x...",     // Event module package ID
-  TOKEN_PACKAGE_ID: "0x...",     // Token module package ID
-  TOKEN_VAULT_ID: "0x...",       // Token vault object ID
-  TOKEN_PRICE_ID: "0x...",       // Token price object ID
-  TOKEN_STATE_ID: "0x...",       // Token state object ID
-  NETWORK: "testnet",            // Network: testnet | mainnet
+  EVENT_PACKAGE_ID: "0x...", // Event module package ID
+  TOKEN_PACKAGE_ID: "0x...", // Token module package ID
+  TOKEN_VAULT_ID: "0x...", // Token vault object ID
+  TOKEN_PRICE_ID: "0x...", // Token price object ID
+  TOKEN_STATE_ID: "0x...", // Token state object ID
+  NETWORK: "testnet", // Network: testnet | mainnet
 };
 ```
 
@@ -153,6 +157,7 @@ export const CONTRACT_CONFIG = {
 ## 🎮 How It Works
 
 ### For Quest Creators
+
 1. Connect your Sui wallet
 2. Navigate to "Buat Misi" (Create Quest)
 3. Fill in quest details (title, description, requirements, reward, deadline)
@@ -160,6 +165,7 @@ export const CONTRACT_CONFIG = {
 5. Verify participant submissions from your dashboard
 
 ### For Participants
+
 1. Connect your Sui wallet
 2. Browse available quests in "Jelajahi Misi"
 3. Join a quest you want to complete
@@ -182,9 +188,10 @@ LIFE is the native reward token of the SuiLife platform:
 
 ## 🌐 Network
 
-Currently deployed on **Sui Testnet**. 
+Currently deployed on **Sui Testnet**.
 
 To get testnet SUI tokens:
+
 - Visit [Sui Testnet Faucet](https://suifaucet.com/)
 - Request tokens to your wallet address
 
