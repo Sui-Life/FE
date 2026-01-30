@@ -2,19 +2,19 @@
 export const CONTRACT_CONFIG = {
   // Update this with your actual deployed package ID from testnet
   EVENT_PACKAGE_ID:
-    "0x3743b6e4b471ec0c878c3e9a243e3c97392ed0824402dd27f6084fd2ae558bc1", // Deployed package ID
+    "0xc85ffd81036b609af85cd07439a8ed01ccb6a3db6cd2f2012c29d4145dbab00d", // Deployed package ID
   TOKEN_PACKAGE_ID:
-    "0x2d1bd20b3021e396cdac5a92e7ab060bcc602dd828f10ec85ba9d6abf59b0e32", // 🔥 REPLACE with Token Package ID
+    "0x69f585ff94a49807d1b385d7e05a08cc01f5622ade69fee17aa6d885b545b0a6", // 🔥 REPLACE with Token Package ID
   MODULE_NAME: "event",
   TOKEN_MODULE_NAME: "life_token",
 
   // Shared Objects for Token (🔥 REPLACE with IDs from deployment output)
   TOKEN_VAULT_ID:
-    "0x30d735d8842c57c8a420cb79b89eec761ef6acca9129a33cacc7ba3be48cdafa",
+    "0x00104f5a420a79eca615fadfb70ec13b01dc0bf40b7d981c4f72367db0237b39",
   TOKEN_PRICE_ID:
-    "0xfb5be84fd5fd97a929487f1d5b39bfaf5a231964cf6c50b3d634aadf187b3eb1",
+    "0xfc987b77613037aed65358049cecfff660a0d074508df739901539884045b244",
   TOKEN_STATE_ID:
-    "0xd6de053b64a02ce43b07bd492c10dc8629d633f2fdc5ddf886b0986b26be9044",
+    "0x393bff9c8ea482a01bbd911a7c0724f2a6f758c26837c72c8428322204b6088e",
 
   // Network configuration
   NETWORK: "testnet",
