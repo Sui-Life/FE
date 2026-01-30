@@ -4,7 +4,7 @@
 
 <img src="./public/logo.png" alt="SuiLife Logo" width="120" />
 
-**Complete real-life missions, earn LIFE tokens, and get rewarded on the Sui blockchain.**
+**Complete real-life missions, earn SUI, and get rewarded on the Sui blockchain.**
 
 [![React](https://img.shields.io/badge/React-19.2-blue?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -17,14 +17,14 @@
 
 ## 📖 Overview
 
-**SuiLife** is a decentralized Web3 application that bridges real-world activities with blockchain rewards. Creators can design quests with specific requirements, and participants complete real-life missions to earn LIFE tokens as rewards.
+**SuiLife** is a decentralized Web3 application that bridges real-world activities with blockchain rewards. Creators can design quests with specific requirements, and participants complete real-life missions to earn SUI as rewards.
 
 ### ✨ Key Features
 
 - 🎯 **Create Quests** - Design missions with custom requirements, rewards, and deadlines
 - 🏃 **Join & Complete** - Participate in quests and submit proof of completion
 - ✅ **Verification System** - Quest creators verify participant submissions
-- 💰 **Claim Rewards** - Verified participants claim LIFE token rewards
+- 💰 **Claim Rewards** - Verified participants claim SUI rewards
 - 💱 **Buy LIFE Tokens** - Exchange SUI for LIFE tokens directly in-app
 - 📊 **Dashboard** - Track your created quests and participation status
 
@@ -88,7 +88,7 @@ FE/
 
 - **Node.js** v18 or higher
 - **pnpm** (recommended) or npm
-- **Sui Wallet** browser extension
+- **Sui Wallet** browser extension (Slush, Suiet)
 
 ### Installation
 
@@ -105,22 +105,15 @@ FE/
    pnpm install
    ```
 
-3. **Configure environment** (optional)
-
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-4. **Start development server**
+3. **Start development server**
 
    ```bash
    pnpm dev
    ```
 
-5. **Open in browser**
+4. **Open in browser**
    ```
-   http://localhost:5173
+   http://localhost:3000
    ```
 
 ---
@@ -159,30 +152,20 @@ export const CONTRACT_CONFIG = {
 ### For Quest Creators
 
 1. Connect your Sui wallet
-2. Navigate to "Buat Misi" (Create Quest)
+2. Navigate to "Create Quest"
 3. Fill in quest details (title, description, requirements, reward, deadline)
-4. Pay the reward pool in LIFE tokens
+4. Pay the reward pool in SUI
 5. Verify participant submissions from your dashboard
 
 ### For Participants
 
 1. Connect your Sui wallet
-2. Browse available quests in "Jelajahi Misi"
+2. Browse available quests in "Explore Quests"
 3. Join a quest you want to complete
 4. Complete the real-life mission
 5. Submit proof of completion
 6. Wait for creator verification
-7. Claim your LIFE token reward!
-
----
-
-## 🪙 LIFE Token
-
-LIFE is the native reward token of the SuiLife platform:
-
-- **Purchase**: Exchange SUI tokens for LIFE
-- **Stake as Rewards**: Creators stake LIFE tokens as quest rewards
-- **Earn**: Participants earn LIFE by completing verified quests
+7. Claim your SUI reward!
 
 ---
 
@@ -192,7 +175,7 @@ Currently deployed on **Sui Testnet**.
 
 To get testnet SUI tokens:
 
-- Visit [Sui Testnet Faucet](https://suifaucet.com/)
+- Visit [Sui Testnet Faucet]([https://faucet.sui.io/]) or [Sui Testnet Faucet]([https://faucet.n1stake.com/])
 - Request tokens to your wallet address
 
 ---
